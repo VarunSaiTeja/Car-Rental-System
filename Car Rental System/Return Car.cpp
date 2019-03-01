@@ -15,8 +15,10 @@ void return_car()
         do
         {
             if (!strcmp(mobile_num, Rented_Car.mobile_num))
+            {
                 rented = TRUE;
-            break;
+                break;
+            }
             cars_rented_check.read((char *)&Rented_Car, sizeof(Cars_Rented));
         } while (!cars_rented_check.eof());
     }
@@ -24,7 +26,7 @@ void return_car()
 
     if (rented)
     {
-        short int total_cost = 0, total_days = 1, total_months, total_years, late_charge_per_day = 0;
+        short int confirm, total_cost = 0, total_days = 1, total_months, total_years, late_charge_per_day = 0;
         SYSTEMTIME time_now;
         GetLocalTime(&time_now);
         Cars_In_Shed car_in_shed;
@@ -124,7 +126,6 @@ void return_car()
              << endl
              << "Choice : ";
 
-        int confirm;
         scanf("%d", &confirm);
 
         switch (confirm)
@@ -140,13 +141,13 @@ void return_car()
             {
                 if (!strcmp(Rented_Car.mobile_num, Other_Car.mobile_num))
                 {
-                    strcpy(car_in_shed.car_num, Rented_Car.car_num);
-                    strcpy(car_in_shed.model, Rented_Car.model);
+                    strcpy(car_in_shed.car_num, Other_Car.car_num);
+                    strcpy(car_in_shed.model, Other_Car.model);
                     put_car.write((char *)&car_in_shed, sizeof(Cars_In_Shed));
                 }
                 else
                 {
-                    cars_rented_temp_db.write((char *)&Rented_Car, sizeof(Cars_Rented));
+                    cars_rented_temp_db.write((char *)&Other_Car, sizeof(Cars_Rented));
                 }
 
                 take_car.read((char *)&Other_Car, (sizeof(Cars_Rented)));
@@ -157,7 +158,11 @@ void return_car()
             cars_rented_temp_db.close();
             remove("cars rented.db");
             rename("temp.db", "cars rented.db");
-            cout << endl;
+            system("cls");
+            cout << "Cars returned to shed" << endl
+                 << endl
+                 << "Collect " << total_cost << " Rs from the " << Rented_Car.customer_name << endl
+                 << endl;
         }
         break;
         case 2:
